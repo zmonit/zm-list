@@ -45,9 +45,9 @@ EXTRA_DIST += \
 endif
 
 EXTRA_DIST += \
-    src/data.h \
+    src/zm_cache.h \
     LICENSE \
-    src/zm_device_classes.h
+    src/zm_list_classes.h
 
 # NOTE: this "include" syntax is not a "make" but an "autotools" keyword,
 # see https://www.gnu.org/software/automake/manual/html_node/Include.html

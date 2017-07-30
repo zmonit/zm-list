@@ -1,10 +1,11 @@
 <project
-    name = "zm-device"
-    description = "Asset management component"
+    name = "zm-list"
+    description = "Cache for messages with a MAILBOX protocol for retrieval"
     script = "zproject.gsl"
     email = "N/A"
-    repository = "https://github.com/zmonit/zm-device"
-    header = "zmdevice.h"
+    repository = "https://github.com/zmonit/zm-list"
+    header = "zmlist.h"
+    license = "MPL-2.0"
     >
 
     <target name = "travis" />
@@ -25,9 +26,8 @@
         <use project = "malamute"/>
     </use>
 
-    <class name = "data" state = "stable" private = "1">state api</class>
-
-    <actor name = "list">zm list actor</actor>
-    <main name = "zm-list" service = "1">Main daemon</main>
+    <actor name = "zm list">zm list actor</actor>
+    <class name = "zm cache" private="1">Internal cache</class>
+    <main name = "zmlist" service = "1">Main daemon</main>
 
 </project>
