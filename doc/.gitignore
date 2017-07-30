@@ -11,10 +11,10 @@
 *.xml7
 
 # Ignore the source doc texts generated from program sources
-list.txt
-list.doc
-zm-list.txt
-zm-list.doc
+zm_list.txt
+zm_list.doc
+zmlist.txt
+zmlist.doc
 
 # Make sure to track the manually maintained project description
 !*.adoc

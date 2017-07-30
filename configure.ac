@@ -7,7 +7,7 @@
 # Process this file with autoconf to produce a configure script.
 AC_PREREQ(2.61)
 #
-AC_INIT([zm-device],[1.0.0],[n/a])
+AC_INIT([zm-list],[1.0.0],[n/a])
 
 AC_CONFIG_AUX_DIR(config)
 AC_CONFIG_MACRO_DIR(config)
@@ -20,11 +20,11 @@ PV_MAJOR=`echo $PACKAGE_VERSION | cut -d . -f 1`
 PV_MINOR=`echo $PACKAGE_VERSION | cut -d . -f 2`
 PV_PATCH=`echo $PACKAGE_VERSION | cut -d . -f 3`
 AC_DEFINE_UNQUOTED([PACKAGE_VERSION_MAJOR],[$PV_MAJOR],
-    [ZM_DEVICE major version])
+    [ZM_LIST major version])
 AC_DEFINE_UNQUOTED([PACKAGE_VERSION_MINOR],[$PV_MINOR],
-    [ZM_DEVICE minor version])
+    [ZM_LIST minor version])
 AC_DEFINE_UNQUOTED([PACKAGE_VERSION_PATCH],[$PV_PATCH],
-    [ZM_DEVICE patchlevel])
+    [ZM_LIST patchlevel])
 # This lets us use PACKAGE_VERSION in Makefiles
 AC_SUBST(PACKAGE_VERSION)
 
@@ -35,12 +35,12 @@ AC_SUBST(PACKAGE_VERSION)
 # know exactly what you're doing and have read and understand
 # http://www.gnu.org/software/libtool/manual/html_node/Updating-version-info.html
 #
-# libzm_device -version-info
+# libzm_list -version-info
 LTVER="1:0:0"
 AC_SUBST(LTVER)
 
 # Capture c flags
-ZM_DEVICE_ORIG_CFLAGS="${CFLAGS:-none}"
+ZM_LIST_ORIG_CFLAGS="${CFLAGS:-none}"
 
 # Checks for programs
 AC_PROG_CC
@@ -56,13 +56,13 @@ PKG_PROG_PKG_CONFIG
 AC_MSG_CHECKING([whether to enable GCov])
 AC_ARG_WITH(gcov, [AS_HELP_STRING([--with-gcov=yes/no],
                   [With GCC Code Coverage reporting])],
-                  [ZM_DEVICE_GCOV="$withval"])
+                  [ZM_LIST_GCOV="$withval"])
 
-if test "x${ZM_DEVICE_GCOV}" == "xyes"; then
+if test "x${ZM_LIST_GCOV}" == "xyes"; then
     CFLAGS="-O0 -g -fprofile-arcs -ftest-coverage"
 
-    if test "x${ZM_DEVICE_ORIG_CFLAGS}" != "xnone"; then
-        CFLAGS="${CFLAGS} ${ZM_DEVICE_ORIG_CFLAGS}"
+    if test "x${ZM_LIST_ORIG_CFLAGS}" != "xnone"; then
+        CFLAGS="${CFLAGS} ${ZM_LIST_ORIG_CFLAGS}"
     fi
     AM_CONDITIONAL(WITH_GCOV, true)
     AC_MSG_RESULT([yes])
@@ -75,9 +75,9 @@ fi
 AC_MSG_CHECKING([whether to enable ASan])
 AC_ARG_ENABLE(address-sanitizer, [AS_HELP_STRING([--enable-address-sanitizer=yes/no],
                   [Build with GCC Address Sanitizer instrumentation])],
-                  [ZM_DEVICE_ASAN="$enableval"])
+                  [ZM_LIST_ASAN="$enableval"])
 
-if test "x${ZM_DEVICE_ASAN}" == "xyes"; then
+if test "x${ZM_LIST_ASAN}" == "xyes"; then
     CFLAGS="${CFLAGS} -fsanitize=address"
     CXXFLAGS="${CXXFLAGS} -fsanitize=address"
 
@@ -131,7 +131,7 @@ AS_CASE([x"${with_libzmq}"],
 dnl We do not abort right now, because the maintainer/developer may have
 dnl something particular in mind, e.g. to build just parts of a project.
 AS_IF([test x"${search_libzmq}" = xno],
-    [AC_MSG_WARN([Required dependency on libzmq was explicitly disabled during configuration by '--with-libzmq=no'; subsequent full build of zm-device may fail])])
+    [AC_MSG_WARN([Required dependency on libzmq was explicitly disabled during configuration by '--with-libzmq=no'; subsequent full build of zm-list may fail])])
 
 AS_IF([test x"${search_libzmq}" = xyes], [
     # Archive previously detected and supplied flags
@@ -218,7 +218,7 @@ AS_CASE([x"${with_libczmq}"],
 dnl We do not abort right now, because the maintainer/developer may have
 dnl something particular in mind, e.g. to build just parts of a project.
 AS_IF([test x"${search_libczmq}" = xno],
-    [AC_MSG_WARN([Required dependency on czmq was explicitly disabled during configuration by '--with-libczmq=no'; subsequent full build of zm-device may fail])])
+    [AC_MSG_WARN([Required dependency on czmq was explicitly disabled during configuration by '--with-libczmq=no'; subsequent full build of zm-list may fail])])
 
 AS_IF([test x"${search_libczmq}" = xyes], [
     # Archive previously detected and supplied flags
@@ -305,7 +305,7 @@ AS_CASE([x"${with_libmlm}"],
 dnl We do not abort right now, because the maintainer/developer may have
 dnl something particular in mind, e.g. to build just parts of a project.
 AS_IF([test x"${search_libmlm}" = xno],
-    [AC_MSG_WARN([Required dependency on malamute was explicitly disabled during configuration by '--with-libmlm=no'; subsequent full build of zm-device may fail])])
+    [AC_MSG_WARN([Required dependency on malamute was explicitly disabled during configuration by '--with-libmlm=no'; subsequent full build of zm-list may fail])])
 
 AS_IF([test x"${search_libmlm}" = xyes], [
     # Archive previously detected and supplied flags
@@ -392,7 +392,7 @@ AS_CASE([x"${with_libzm_proto}"],
 dnl We do not abort right now, because the maintainer/developer may have
 dnl something particular in mind, e.g. to build just parts of a project.
 AS_IF([test x"${search_libzm_proto}" = xno],
-    [AC_MSG_WARN([Required dependency on zm_proto was explicitly disabled during configuration by '--with-libzm_proto=no'; subsequent full build of zm-device may fail])])
+    [AC_MSG_WARN([Required dependency on zm_proto was explicitly disabled during configuration by '--with-libzm_proto=no'; subsequent full build of zm-list may fail])])
 
 AS_IF([test x"${search_libzm_proto}" = xyes], [
     # Archive previously detected and supplied flags
@@ -465,11 +465,11 @@ LIBS="${PREVIOUS_LIBS}"
 AC_SUBST(pkg_config_libs_private, $PKGCFG_LIBS_PRIVATE)
 
 # Platform specific checks
-zm_device_on_mingw32="no"
-zm_device_on_cygwin="no"
-zm_device_on_android="no"
-zm_device_on_linux="no"
-zm_device_on_gnu="no"
+zm_list_on_mingw32="no"
+zm_list_on_cygwin="no"
+zm_list_on_android="no"
+zm_list_on_linux="no"
+zm_list_on_gnu="no"
 
 # Host specific checks
 AC_CANONICAL_HOST
@@ -482,46 +482,46 @@ AC_ARG_WITH([docs],
     [with_docs=$withval])
 
 if test "x$with_docs" = "xno"; then
-    zm_device_build_doc="no"
-    zm_device_install_man="no"
+    zm_list_build_doc="no"
+    zm_list_install_man="no"
 else
     # Determine whether or not documentation should be built and installed.
-    zm_device_build_doc="yes"
-    zm_device_install_man="yes"
+    zm_list_build_doc="yes"
+    zm_list_install_man="yes"
 
     # Check for asciidoc and xmlto and don't build the docs if these are not installed.
-    AC_CHECK_PROG(zm_device_have_asciidoc, asciidoc, yes, no)
-    AC_CHECK_PROG(zm_device_have_xmlto, xmlto, yes, no)
-    if test "x$zm_device_have_asciidoc" = "xno" -o "x$zm_device_have_xmlto" = "xno"; then
-        zm_device_build_doc="no"
+    AC_CHECK_PROG(zm_list_have_asciidoc, asciidoc, yes, no)
+    AC_CHECK_PROG(zm_list_have_xmlto, xmlto, yes, no)
+    if test "x$zm_list_have_asciidoc" = "xno" -o "x$zm_list_have_xmlto" = "xno"; then
+        zm_list_build_doc="no"
         # Tarballs built with 'make dist' ship with prebuilt documentation.
-        if ! test -f doc/zm-device.7; then
-            zm_device_install_man="no"
-            AC_MSG_WARN([You are building an unreleased version of ZM-DEVICE and asciidoc or xmlto are not installed.])
+        if ! test -f doc/zm-list.7; then
+            zm_list_install_man="no"
+            AC_MSG_WARN([You are building an unreleased version of ZM-LIST and asciidoc or xmlto are not installed.])
             AC_MSG_WARN([Documentation will not be built and manual pages will not be installed.])
         fi
     fi
 fi
 AC_MSG_CHECKING([whether to build documentation])
-AC_MSG_RESULT([$zm_device_build_doc])
+AC_MSG_RESULT([$zm_list_build_doc])
 AC_MSG_CHECKING([whether to install manpages])
-AC_MSG_RESULT([$zm_device_install_man])
+AC_MSG_RESULT([$zm_list_install_man])
 
-# Set some default features required by libzm_device code.
-CPPFLAGS="-DZM_DEVICE_INTERNAL_BUILD -D_REENTRANT -D_THREAD_SAFE $CPPFLAGS"
+# Set some default features required by libzm_list code.
+CPPFLAGS="-DZM_LIST_INTERNAL_BUILD -D_REENTRANT -D_THREAD_SAFE $CPPFLAGS"
 
 # OS-specific tests
 case "${host_os}" in
     *linux*)
         # Define on Linux to enable all library features
         CPPFLAGS="-D_GNU_SOURCE -DLINUX $CPPFLAGS"
-        AC_DEFINE(ZM_DEVICE_HAVE_LINUX, 1, [Have Linux OS])
-        zm_device_on_linux="yes"
+        AC_DEFINE(ZM_LIST_HAVE_LINUX, 1, [Have Linux OS])
+        zm_list_on_linux="yes"
 
         case "${host_os}" in
             *android*)
-                AC_DEFINE(ZM_DEVICE_HAVE_ANDROID, 1, [Have Android OS])
-                zm_device_on_android="yes"
+                AC_DEFINE(ZM_LIST_HAVE_ANDROID, 1, [Have Android OS])
+                zm_list_on_android="yes"
             ;;
         esac
         ;;
@@ -530,74 +530,74 @@ case "${host_os}" in
         CPPFLAGS="-D_PTHREADS $CPPFLAGS"
         # Allow definitions of common OS-provided functions that are not in old standards
         CPPFLAGS="-D__EXTENSIONS__ $CPPFLAGS"
-        AC_DEFINE(ZM_DEVICE_HAVE_SOLARIS, 1, [Have Solaris OS])
+        AC_DEFINE(ZM_LIST_HAVE_SOLARIS, 1, [Have Solaris OS])
         CFLAGS="${CFLAGS} -lsocket -lssp"
         ;;
     *freebsd*)
         # Define on FreeBSD to enable all library features
         CPPFLAGS="-D__BSD_VISIBLE $CPPFLAGS"
-        AC_DEFINE(ZM_DEVICE_HAVE_FREEBSD, 1, [Have FreeBSD OS])
+        AC_DEFINE(ZM_LIST_HAVE_FREEBSD, 1, [Have FreeBSD OS])
         ;;
     *darwin*)
         # Define on Darwin to enable all library features
         CPPFLAGS="-D_DARWIN_C_SOURCE $CPPFLAGS"
-        AC_DEFINE(ZM_DEVICE_HAVE_OSX, 1, [Have DarwinOSX OS])
+        AC_DEFINE(ZM_LIST_HAVE_OSX, 1, [Have DarwinOSX OS])
         ;;
     *netbsd*)
         # Define on NetBSD to enable all library features
         CPPFLAGS="-D_NETBSD_SOURCE $CPPFLAGS"
-        AC_DEFINE(ZM_DEVICE_HAVE_NETBSD, 1, [Have NetBSD OS])
+        AC_DEFINE(ZM_LIST_HAVE_NETBSD, 1, [Have NetBSD OS])
         ;;
     *openbsd*)
         # Define on OpenBSD to enable all library features
         CPPFLAGS="-D_BSD_SOURCE $CPPFLAGS"
-        AC_DEFINE(ZM_DEVICE_HAVE_OPENBSD, 1, [Have OpenBSD OS])
+        AC_DEFINE(ZM_LIST_HAVE_OPENBSD, 1, [Have OpenBSD OS])
         ;;
     *nto-qnx*)
-        AC_DEFINE(ZM_DEVICE_HAVE_QNXNTO, 1, [Have QNX Neutrino OS])
+        AC_DEFINE(ZM_LIST_HAVE_QNXNTO, 1, [Have QNX Neutrino OS])
         ;;
     *aix*)
-        AC_DEFINE(ZM_DEVICE_HAVE_AIX, 1, [Have AIX OS])
+        AC_DEFINE(ZM_LIST_HAVE_AIX, 1, [Have AIX OS])
         ;;
     *hpux*)
         # Define on HP-UX to enable all library features
         CPPFLAGS="-D_POSIX_C_SOURCE=200112L"
-        AC_DEFINE(ZM_DEVICE_HAVE_HPUX, 1, [Have HPUX OS])
+        AC_DEFINE(ZM_LIST_HAVE_HPUX, 1, [Have HPUX OS])
         ;;
     *mingw32*)
         # Disable format error due to incomplete ANSI C
         CFLAGS="-Wno-error=format -Wno-unused-function -Wno-unused-variable -D_XOPEN_SOURCE $CFLAGS"
         CPPFLAGS="-Wno-error=format -Wno-unused-function -Wno-unused-variable -D_XOPEN_SOURCE $CPPFLAGS"
-        AC_DEFINE(ZM_DEVICE_HAVE_WINDOWS, 1, [Have Windows OS])
-        AC_DEFINE(ZM_DEVICE_HAVE_MINGW32, 1, [Have MinGW32])
+        AC_DEFINE(ZM_LIST_HAVE_WINDOWS, 1, [Have Windows OS])
+        AC_DEFINE(ZM_LIST_HAVE_MINGW32, 1, [Have MinGW32])
         AC_CHECK_HEADERS(windows.h)
-        zm_device_on_mingw32="yes"
-        zm_device_install_man="no"
+        zm_list_on_mingw32="yes"
+        zm_list_install_man="no"
         ;;
     *mingw64*)
         # Define on MINGW64 to enable all libeary features
         # Disable format error due to incomplete ANSI C
         CFLAGS="-Wno-error=format -Wno-unused-function -Wno-unused-variable -D_XOPEN_SOURCE $CFLAGS"
         CPPFLAGS="-Wno-error=format -Wno-unused-function -Wno-unused-variable -D_XOPEN_SOURCE $CPPFLAGS"
-        AC_DEFINE(ZM_DEVICE_HAVE_WINDOWS, 1, [Have Windows OS])
-        AC_DEFINE(ZM_DEVICE_HAVE_MINGW32, 1, [Have MinGW32])
+        AC_DEFINE(ZM_LIST_HAVE_WINDOWS, 1, [Have Windows OS])
+        AC_DEFINE(ZM_LIST_HAVE_MINGW32, 1, [Have MinGW32])
         AC_CHECK_HEADERS(windows.h)
-        zm_device_on_mingw32="yes"
-        zm_device_install_man="no"
+        zm_list_on_mingw32="yes"
+        zm_list_install_man="no"
         ;;
     *cygwin*)
         # Define on Cygwin to enable all library features
         CPPFLAGS="-D_GNU_SOURCE $CPPFLAGS"
-        AC_DEFINE(ZM_DEVICE_HAVE_CYGWIN, 1, [Have Cygwin])
-        zm_device_on_cygwin="yes"
+        AC_DEFINE(ZM_LIST_HAVE_CYGWIN, 1, [Have Cygwin])
+        zm_list_on_cygwin="yes"
         ;;
     gnu*)
         # Define on GNU/Hurd to enable all library features
         if test "x$GXX" = "xyes"; then
             CPPFLAGS="-D_GNU_SOURCE $CPPFLAGS"
         fi
-        AC_DEFINE(ZM_DEVICE_HAVE_GNU, 1, [Have GNU/Hurd OS])
-        zm_device_on_gnu="yes"
+        AC_DEFINE(ZM_LIST_HAVE_GNU, 1, [Have GNU/Hurd OS])
+        zm_list_on_gnu="yes"
         ;;
     *)
         AC_MSG_ERROR([unsupported system: ${host_os}])
@@ -634,13 +634,13 @@ if test "x$GCC" = "xyes"; then
 fi
 
 AM_CONDITIONAL(ENABLE_SHARED, test "x$enable_shared" = "xyes")
-AM_CONDITIONAL(ON_MINGW, test "x$zm_device_on_mingw32" = "xyes")
-AM_CONDITIONAL(ON_CYGWIN, test "x$zm_device_on_cygwin" = "xyes")
-AM_CONDITIONAL(ON_ANDROID, test "x$zm_device_on_android" = "xyes")
-AM_CONDITIONAL(ON_LINUX, test "x$zm_device_on_linux" = "xyes")
-AM_CONDITIONAL(ON_GNU, test "x$zm_device_on_gnu" = "xyes")
-AM_CONDITIONAL(INSTALL_MAN, test "x$zm_device_install_man" = "xyes")
-AM_CONDITIONAL(BUILD_DOC, test "x$zm_device_build_doc" = "xyes")
+AM_CONDITIONAL(ON_MINGW, test "x$zm_list_on_mingw32" = "xyes")
+AM_CONDITIONAL(ON_CYGWIN, test "x$zm_list_on_cygwin" = "xyes")
+AM_CONDITIONAL(ON_ANDROID, test "x$zm_list_on_android" = "xyes")
+AM_CONDITIONAL(ON_LINUX, test "x$zm_list_on_linux" = "xyes")
+AM_CONDITIONAL(ON_GNU, test "x$zm_list_on_gnu" = "xyes")
+AM_CONDITIONAL(INSTALL_MAN, test "x$zm_list_install_man" = "xyes")
+AM_CONDITIONAL(BUILD_DOC, test "x$zm_list_build_doc" = "xyes")
 
 AC_ARG_ENABLE([dist_cmakefiles],
     AS_HELP_STRING([--enable-dist_cmakefiles],
@@ -655,25 +655,25 @@ fi
      AC_MSG_RESULT([$enable_dist_cmakefiles])])
 AM_CONDITIONAL(ENABLE_DIST_CMAKEFILES, test "x$enable_dist_cmakefiles" = "xyes")
 
-# Check for zm-list intent
-AC_ARG_ENABLE([zm-list],
-    AS_HELP_STRING([--enable-zm-list],
-        [Compile and install 'zm-list' [default=yes]]),
-    [enable_zm_list=$enableval],
-    [enable_zm_list=yes])
+# Check for zmlist intent
+AC_ARG_ENABLE([zmlist],
+    AS_HELP_STRING([--enable-zmlist],
+        [Compile and install 'zmlist' [default=yes]]),
+    [enable_zmlist=$enableval],
+    [enable_zmlist=yes])
 
-AM_CONDITIONAL([ENABLE_ZM_LIST], [test x$enable_zm_list != xno])
-AM_COND_IF([ENABLE_ZM_LIST], [AC_MSG_NOTICE([ENABLE_ZM_LIST defined])])
+AM_CONDITIONAL([ENABLE_ZMLIST], [test x$enable_zmlist != xno])
+AM_COND_IF([ENABLE_ZMLIST], [AC_MSG_NOTICE([ENABLE_ZMLIST defined])])
 
-# Check for zm_device_selftest intent
-AC_ARG_ENABLE([zm_device_selftest],
-    AS_HELP_STRING([--enable-zm_device_selftest],
-        [Compile 'zm_device_selftest' in src [default=yes]]),
-    [enable_zm_device_selftest=$enableval],
-    [enable_zm_device_selftest=yes])
+# Check for zm_list_selftest intent
+AC_ARG_ENABLE([zm_list_selftest],
+    AS_HELP_STRING([--enable-zm_list_selftest],
+        [Compile 'zm_list_selftest' in src [default=yes]]),
+    [enable_zm_list_selftest=$enableval],
+    [enable_zm_list_selftest=yes])
 
-AM_CONDITIONAL([ENABLE_ZM_DEVICE_SELFTEST], [test x$enable_zm_device_selftest != xno])
-AM_COND_IF([ENABLE_ZM_DEVICE_SELFTEST], [AC_MSG_NOTICE([ENABLE_ZM_DEVICE_SELFTEST defined])])
+AM_CONDITIONAL([ENABLE_ZM_LIST_SELFTEST], [test x$enable_zm_list_selftest != xno])
+AM_COND_IF([ENABLE_ZM_LIST_SELFTEST], [AC_MSG_NOTICE([ENABLE_ZM_LIST_SELFTEST defined])])
 
 # Checks for library functions.
 AC_TYPE_SIGNAL
@@ -715,8 +715,8 @@ AM_CONDITIONAL([ENABLE_DRAFTS], [test x$enable_drafts != xno])
 
 if test "x$enable_drafts" = "xyes"; then
     AC_MSG_NOTICE([Building stable and legacy API + draft API])
-    AC_DEFINE(ZM_DEVICE_BUILD_DRAFT_API, 1, [Provide draft classes and methods])
-    AC_SUBST(pkg_config_defines, "-DZM_DEVICE_BUILD_DRAFT_API=1")
+    AC_DEFINE(ZM_LIST_BUILD_DRAFT_API, 1, [Provide draft classes and methods])
+    AC_SUBST(pkg_config_defines, "-DZM_LIST_BUILD_DRAFT_API=1")
 else
     AC_MSG_NOTICE([Building stable and legacy API (no draft API)])
     AC_SUBST(pkg_config_defines, "")
@@ -752,13 +752,13 @@ AS_IF([test "x$enable_Werror" = "xyes" || test "x$enable_Werror" = "xauto"],
 # Specify output files
 AC_CONFIG_FILES([Makefile
                  doc/Makefile
-                 src/libzm_device.pc
-                 src/zm-list.cfg
+                 src/libzm_list.pc
+                 src/zmlist.cfg
                  ])
 
 AM_COND_IF([WITH_SYSTEMD_UNITS],
     [AC_CONFIG_FILES([
-                 src/zm-list.service
+                 src/zmlist.service
     ])],
     [])
 
@@ -800,12 +800,12 @@ echo C++ compiler.................. : $CXX
 echo C++ compiler flags............ : $CXXFLAGS
 echo Configure date................ : $BUILD_DATE
 echo Build architecture............ : $BUILD_ARCH
-echo Build docs.................... : $zm_device_build_doc
+echo Build docs.................... : $zm_list_build_doc
 echo Build host.................... : $BUILD_HOST
 echo Build user.................... : $USER
 echo Draft API..................... : $enable_drafts
 echo Install dir................... : $prefix
-echo Install man pages............. : $zm_device_install_man
+echo Install man pages............. : $zm_list_install_man
 
 echo
 echo Help:

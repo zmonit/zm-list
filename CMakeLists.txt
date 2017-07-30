@@ -7,7 +7,7 @@
 # Project setup
 ########################################################################
 cmake_minimum_required(VERSION 2.8)
-project(zm_device)
+project(zm_list)
 enable_language(C)
 enable_testing()
 
@@ -24,7 +24,7 @@ set(pkg_config_libs_private "")
 ########################################################################
 OPTION (ENABLE_DRAFTS "Build and install draft classes and methods" ON)
 IF (ENABLE_DRAFTS)
-    ADD_DEFINITIONS (-DZM_DEVICE_BUILD_DRAFT_API)
+    ADD_DEFINITIONS (-DZM_LIST_BUILD_DRAFT_API)
 ENDIF (ENABLE_DRAFTS)
 
 ########################################################################
@@ -137,60 +137,60 @@ ENDIF (ZM-PROTO_FOUND)
 ########################################################################
 # includes
 ########################################################################
-set (zm_device_headers
-    include/zm_device_library.h
-    include/zmdevice.h
-    src/data.h
+set (zm_list_headers
+    include/zm_list_library.h
+    include/zmlist.h
+    src/zm_cache.h
 )
 
 IF (ENABLE_DRAFTS)
-    list(APPEND zm_device_headers
-        include/list.h
+    list(APPEND zm_list_headers
+        include/zm_list.h
     )
 ENDIF (ENABLE_DRAFTS)
 
-source_group ("Header Files" FILES ${zm_device_headers})
-install(FILES ${zm_device_headers} DESTINATION include)
+source_group ("Header Files" FILES ${zm_list_headers})
+install(FILES ${zm_list_headers} DESTINATION include)
 
 ########################################################################
 # library
 ########################################################################
 include_directories("${SOURCE_DIR}/src" "${SOURCE_DIR}/include")
-set (zm_device_sources
-    src/data.c
+set (zm_list_sources
+    src/zm_cache.c
 )
 
 IF (ENABLE_DRAFTS)
-    list (APPEND zm_device_sources
-        src/list.c
+    list (APPEND zm_list_sources
+        src/zm_list.c
     )
 ENDIF (ENABLE_DRAFTS)
 
 IF (ENABLE_DRAFTS)
-    list (APPEND zm_device_sources
-        src/zm_device_private_selftest.c
+    list (APPEND zm_list_sources
+        src/zm_list_private_selftest.c
     )
 ENDIF (ENABLE_DRAFTS)
 
-source_group("Source Files" FILES ${zm_device_sources})
+source_group("Source Files" FILES ${zm_list_sources})
 if (NOT DEFINED BUILD_SHARED_LIBS)
     SET(BUILD_SHARED_LIBS ON)
 endif()
-add_library(zm_device ${zm_device_sources})
-set_target_properties(zm_device
-    PROPERTIES DEFINE_SYMBOL "ZM_DEVICE_EXPORTS"
+add_library(zm_list ${zm_list_sources})
+set_target_properties(zm_list
+    PROPERTIES DEFINE_SYMBOL "ZM_LIST_EXPORTS"
 )
-set_target_properties (zm_device
+set_target_properties (zm_list
     PROPERTIES SOVERSION "1"
 )
-set_target_properties (zm_device
+set_target_properties (zm_list
     PROPERTIES VERSION "1.0.0"
 )
-target_link_libraries(zm_device
+target_link_libraries(zm_list
     ${ZEROMQ_LIBRARIES} ${MORE_LIBRARIES}
 )
 
-install(TARGETS zm_device
+install(TARGETS zm_list
     LIBRARY DESTINATION "lib${LIB_SUFFIX}" # .so file
     ARCHIVE DESTINATION "lib${LIB_SUFFIX}" # .lib file
     RUNTIME DESTINATION bin              # .dll file
@@ -205,17 +205,17 @@ set (exec_prefix "\${prefix}")
 set (libdir "\${prefix}/lib${LIB_SUFFIX}")
 set (includedir "\${prefix}/include")
 IF (ENABLE_DRAFTS)
-    set (pkg_config_defines "-DZM_DEVICE_BUILD_DRAFT_API=1")
+    set (pkg_config_defines "-DZM_LIST_BUILD_DRAFT_API=1")
 ELSE (ENABLE_DRAFTS)
     set (pkg_config_defines "")
 ENDIF (ENABLE_DRAFTS)
 configure_file(
-    "${SOURCE_DIR}/src/libzm_device.pc.in"
-    "${SOURCE_DIR}/src/libzm_device.pc"
+    "${SOURCE_DIR}/src/libzm_list.pc.in"
+    "${SOURCE_DIR}/src/libzm_list.pc"
 @ONLY)
 
 install(
-    FILES "${SOURCE_DIR}/src/libzm_device.pc"
+    FILES "${SOURCE_DIR}/src/libzm_list.pc"
     DESTINATION "lib${LIB_SUFFIX}/pkgconfig"
 )
 
@@ -223,28 +223,28 @@ install(
 # executables
 ########################################################################
 add_executable(
-    zm-list
-    "${SOURCE_DIR}/src/zm-list.c"
+    zmlist
+    "${SOURCE_DIR}/src/zmlist.c"
 )
 target_link_libraries(
-    zm-list
-    zm_device
+    zmlist
+    zm_list
     ${LIBZMQ_LIBRARIES}
     ${CZMQ_LIBRARIES}
     ${MALAMUTE_LIBRARIES}
     ${ZM-PROTO_LIBRARIES}
     ${OPTIONAL_LIBRARIES}
 )
-install(TARGETS zm-list
+install(TARGETS zmlist
     RUNTIME DESTINATION bin
 )
 add_executable(
-    zm_device_selftest
-    "${SOURCE_DIR}/src/zm_device_selftest.c"
+    zm_list_selftest
+    "${SOURCE_DIR}/src/zm_list_selftest.c"
 )
 target_link_libraries(
-    zm_device_selftest
-    zm_device
+    zm_list_selftest
+    zm_list
     ${LIBZMQ_LIBRARIES}
     ${CZMQ_LIBRARIES}
     ${MALAMUTE_LIBRARIES}
@@ -270,7 +270,7 @@ set(TEST_CLASSES
 
 IF (ENABLE_DRAFTS)
     list (APPEND TEST_CLASSES
-    list
+    zm_list
     )
 ENDIF (ENABLE_DRAFTS)
 
@@ -299,7 +299,7 @@ set_directory_properties(
 foreach(TEST_CLASS ${TEST_CLASSES})
     add_test(
         NAME ${TEST_CLASS}
-        COMMAND zm_device_selftest --continue --verbose --test ${TEST_CLASS}
+        COMMAND zm_list_selftest --continue --verbose --test ${TEST_CLASS}
     )
     set_tests_properties(
         ${TEST_CLASS}
@@ -327,11 +327,11 @@ set(cmake_generated ${CMAKE_BINARY_DIR}/CMakeCache.txt
                     ${CMAKE_BINARY_DIR}/Testing
                     ${CMAKE_BINARY_DIR}/compile_commands.json
                     ${CMAKE_BINARY_DIR}/src/platform.h
-                    ${CMAKE_BINARY_DIR}/src/libzm_device.pc
-                    ${CMAKE_BINARY_DIR}/src/libzm_device.so
-                    ${CMAKE_BINARY_DIR}/src/zm-device_selftest
-                    ${CMAKE_BINARY_DIR}/src/zm-list
-                    ${CMAKE_BINARY_DIR}/src/zm_device_selftest
+                    ${CMAKE_BINARY_DIR}/src/libzm_list.pc
+                    ${CMAKE_BINARY_DIR}/src/libzm_list.so
+                    ${CMAKE_BINARY_DIR}/src/zm-list_selftest
+                    ${CMAKE_BINARY_DIR}/src/zmlist
+                    ${CMAKE_BINARY_DIR}/src/zm_list_selftest
 )
 
 add_custom_command(

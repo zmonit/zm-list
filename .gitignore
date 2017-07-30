@@ -21,18 +21,18 @@ save.xml
 *.lo
 
 # Executables
-src/zm-device_selftest
-src/zm-list
-src/zm_device_selftest
+src/zm-list_selftest
+src/zmlist
+src/zm_list_selftest
 *.exe
 *.out
 *.app
 core
 
  # Distcheck workspace and archives
-zm-device-1.0.0/
-zm-device-1.0.0.tar.gz
-zm-device-1.0.0.zip
+zm-list-1.0.0/
+zm-list-1.0.0.tar.gz
+zm-list-1.0.0.zip
 
 # Man pages
 doc/*.1
