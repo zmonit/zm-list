@@ -64,7 +64,7 @@ zm_cache_destroy (zm_cache_t **self_p)
 }
 
 //  --------------------------------------------------------------------------
-//  Destroy the zm_cache
+//  Put new item to cache, which now owns the value
 
 void
 zm_cache_put (zm_cache_t *self, char *key, zm_proto_t *msg) {
