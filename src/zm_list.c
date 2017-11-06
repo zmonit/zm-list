@@ -26,7 +26,10 @@ struct _zm_list_t {
     zpoller_t *poller;          //  Socket poller
     bool terminated;            //  Did caller ask us to quit?
     bool verbose;               //  Verbose logging enabled?
-    //  TODO: Declare properties
+    //  Declare properties
+    mlm_client_t *client;       //  Malamute client
+    zm_cache_t *cache;          //  Internal cache for all METRICS
+    zm_proto_t *msg;            //  zmproto message
 };
 
 
@@ -43,7 +46,10 @@ zm_list_new (zsock_t *pipe, void *args)
     self->terminated = false;
     self->poller = zpoller_new (self->pipe, NULL);
 
-    //  TODO: Initialize properties
+    //  Initialize properties
+    self->client = mlm_client_new ();
+    zpoller_add (self->poller, mlm_client_msgpipe (self->client));
+    self->cache = zm_cache_new ();
 
     return self;
 }
@@ -59,7 +65,8 @@ zm_list_destroy (zm_list_t **self_p)
     if (*self_p) {
         zm_list_t *self = *self_p;
 
-        //  TODO: Free actor properties
+        //  Free actor properties
+        mlm_client_destroy (&self->client);
 
         //  Free object itself
         zpoller_destroy (&self->poller);
@@ -128,6 +135,42 @@ zm_list_recv_api (zm_list_t *self)
     zmsg_destroy (&request);
 }
 
+void
+zm_list_recv_mlm (zm_list_t *self)
+{
+    assert (self);
+
+    zm_proto_recv_mlm (self->msg, self->client);
+
+    if (streq (mlm_client_command (self->client), "MAILBOX DELIVER")) {
+        char *key = zsys_sprintf ("%s@%s",
+            zm_proto_type (self->msg),
+            zm_proto_device (self->msg));
+        
+        zm_cache_gc (self->cache, key);
+        zm_proto_t *get = zm_cache_get (self->cache, key);
+        zstr_free (&key);
+
+        if (get)
+            zm_proto_sendto (
+                    get,
+                    self->client,
+                    mlm_client_sender (self->client),
+                    mlm_client_subject (self->client));
+        else {
+            zm_proto_set_id (self->msg, ZM_PROTO_ERROR);
+            zm_proto_sendto (
+                    self->msg,
+                    self->client,
+                    mlm_client_sender (self->client),
+                    mlm_client_subject (self->client));
+        }
+    }
+    else
+    if (streq (mlm_client_command (self->client), "STREAM DELIVER")) {
+        zm_cache_put (self->cache, (char*) mlm_client_subject (self->client), self->msg);
+    }
+}
 
 //  --------------------------------------------------------------------------
 //  This is the actor which runs in its own thread.
@@ -146,7 +189,9 @@ zm_list_actor (zsock_t *pipe, void *args)
         zsock_t *which = (zsock_t *) zpoller_wait (self->poller, 0);
         if (which == self->pipe)
             zm_list_recv_api (self);
-       //  Add other sockets when you need them.
+        else
+        if (which == mlm_client_msgpipe (self->client))
+            zm_list_recv_mlm (self);
     }
     zm_list_destroy (&self);
 }
@@ -160,20 +205,6 @@ zm_list_test (bool verbose)
     printf (" * zm_list: ");
     //  @selftest
     //  Simple create/destroy test
-    // Note: If your selftest reads SCMed fixture data, please keep it in
-    // src/selftest-ro; if your test creates filesystem objects, please
-    // do so under src/selftest-rw. They are defined below along with a
-    // usecase for the variables (assert) to make compilers happy.
-    const char *SELFTEST_DIR_RO = "src/selftest-ro";
-    const char *SELFTEST_DIR_RW = "src/selftest-rw";
-    assert (SELFTEST_DIR_RO);
-    assert (SELFTEST_DIR_RW);
-    // Uncomment these to use C++ strings in C++ selftest code:
-    //std::string str_SELFTEST_DIR_RO = std::string(SELFTEST_DIR_RO);
-    //std::string str_SELFTEST_DIR_RW = std::string(SELFTEST_DIR_RW);
-    //assert ( (str_SELFTEST_DIR_RO != "") );
-    //assert ( (str_SELFTEST_DIR_RW != "") );
-    // NOTE that for "char*" context you need (str_SELFTEST_DIR_RO + "/myfilename").c_str()
 
     zactor_t *zm_list = zactor_new (zm_list_actor, NULL);
 
